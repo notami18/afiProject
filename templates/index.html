@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Traductor a AFI</title>
+</head>
+<body>
+    <h1>Traductor a AFI</h1>
+    <form action="/traducir" method="post">
+        <input type="text" name="texto" placeholder="Escribe una palabra o una oración">
+        <button type="submit">Traducir</button>
+    </form>
+
+    {% if traduccion %}
+        <h2>Traducción a AFI:</h2>
+        <p>{{ traduccion }}</p>
+    {% endif %}
+</body>
+</html>
