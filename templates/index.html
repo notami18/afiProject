@@ -1,19 +1,61 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Traductor a AFI</title>
-</head>
-<body>
-    <h1>Traductor a AFI</h1>
-    <form action="/traducir" method="post">
-        <input type="text" name="texto" placeholder="Escribe una palabra o una oración">
-        <button type="submit">Traducir</button>
-    </form>
+{% extends 'bootstrap/base.html' %}
+{% block head %}
+    {{ super() }}
+    <title>
+        {% block title %}Traductor Talen | {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+{% endblock %}
+{% block body %}
+    <div class="container">
+        <h1>Traductor a AFI</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile" name="file_excel" accept=".xlsx">
+                    <label class="custom-file-label" for="customFile">Seleccionar Archivo</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <input class="btn btn-default" type="submit" value="Cargar archivo">
+            </div>
+        </form>
+        <form action="/traducer" method="post">
+            <div class="form-group">
+                <textarea class="form-control" name="texto" placeholder="Escribe una palabra o una oración" rows="4" ></textarea>
+            </div>
+            <div class="form-group">
+                <button class="btn btn-success" type="submit">Traducir</button>
+            </div>
+        </form>
 
-    {% if traduccion %}
-        <h2>Traducción a AFI:</h2>
-        <p>{{ traduccion }}</p>
-    {% endif %}
-</body>
-</html>
+        <div class="card">
+            <div class="card-body">
+                {% for palabra_color in palabras_color %}
+                    <span style="color: {{ palabra_color.color }};">{{ palabra_color.palabra }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+    {% block content %}
+    {% endblock %}
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-success alert-dismissable">
+            <button type="button"
+                    data-dismiss="alert"
+                    class="close">&times;</button>
+        {{ message }}
+        </div>
+    {% endfor %}
+    {%  block scripts %}
+        {{ super() }}
+        <script type="application/javascript">
+            $('input[type="file"]').change(function(e){
+                var fileName = e.target.files[0].name;
+                $('.custom-file-label').html(fileName);
+            });
+        </script>
+    {% endblock %}
+{% endblock %}
+
