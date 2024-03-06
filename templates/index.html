@@ -2,44 +2,76 @@
 {% block head %}
     {{ super() }}
     <title>
-        {% block title %}Traductor Talen | {% endblock %}
+        {% block title %} Talen Maxine Traductor {% endblock %}
     </title>
+    <link rel="icon" type="image/x-icon" href="https://talenmaxine.com/wp-content/uploads/2021/08/1-PNG-Transparencia.png">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 {% endblock %}
 {% block body %}
-    <div class="container">
-        <h1>Traductor a AFI</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="customFile" name="file_excel" accept=".xlsx">
-                    <label class="custom-file-label" for="customFile">Seleccionar Archivo</label>
-                </div>
-            </div>
-            <div class="form-group">
-                <input class="btn btn-default" type="submit" value="Cargar archivo">
-            </div>
-        </form>
-        <form action="/traducer" method="post">
-            <div class="form-group">
-                <textarea class="form-control" name="texto" placeholder="Escribe una palabra o una oración" rows="4" ></textarea>
-            </div>
-            <div class="form-group">
-                <button class="btn btn-success" type="submit">Traducir</button>
-            </div>
-        </form>
-
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="https://talenmaxine.com/wp-content/uploads/2021/08/1-PNG-Transparencia.png" width="30" height="30" class="d-inline-block align-top" alt="">
+            TALEN MAXINE |
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{{ url_for('index') }}">Inicio <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://talenmaxine.com/" target="_blank">Talen Academy</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container shadow-lg p-3 mb-5 bg-white rounded">
         <div class="card">
             <div class="card-body">
-                {% for palabra_color in palabras_color %}
-                    <span style="color: {{ palabra_color.color }};">{{ palabra_color.palabra }}</span>
-                {% endfor %}
+                <h3>TRADUCTOR INGLES - AFI</h3>
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="customFile" name="file_excel" accept=".xlsx" lang="es">
+                            <label class="custom-file-label" for="customFile">Seleccionar Archivo</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input id="upload-button" class="btn btn-default" type="submit" value="Cargar archivo" disabled>
+                        {% if dictionary %}
+                            <span class="badge badge-success">Processed file</span>
+                        {% endif %}
+                    </div>
+                </form>
+                <form action="/traducer" method="post">
+                    <div class="form-group">
+                        <textarea class="form-control" name="texto" placeholder="Escribe una palabra o una oración" rows="4">{{ texto }}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-success" type="submit">Traducir</button>
+                        <button class="btn btn-light" id="clear-textarea" style="display: none;">Limpiar</button>
+                    </div>
+                </form>
+
+                <div class="card">
+                    <div class="card-body">
+                        {% for palabra_color in palabras_color %}
+                            <span style="color: {{ palabra_color.color }};">{{ palabra_color.palabra }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
     {% block content %}
     {% endblock %}
+    <footer class="footer mt-auto py-3 bg-light">
+        <div class="container text-center">
+            <span class="text-muted">&copy; <span id="year"></span> TALEN MAXINE. Todos los derechos reservados.</span>
+        </div>
+    </footer>
     {% for message in get_flashed_messages() %}
         <div class="alert alert-success alert-dismissable">
             <button type="button"
@@ -55,6 +87,42 @@
                 var fileName = e.target.files[0].name;
                 $('.custom-file-label').html(fileName);
             });
+            $(document).ready(function() {
+                var textarea = $('textarea[name="texto"]');
+                var clearButton = $('#clear-textarea');
+
+                // Función para mostrar u ocultar el botón
+                function toggleClearButton() {
+                    if (textarea.val().length > 0) {
+                        clearButton.show();
+                    } else {
+                        clearButton.hide();
+                    }
+                }
+
+                // Verificar el contenido del textarea cuando se carga la página
+                toggleClearButton();
+
+                // Escuchar el evento input en el textarea
+                textarea.on('input', toggleClearButton);
+
+                // Limpiar el textarea cuando se hace clic en el botón
+                clearButton.click(function() {
+                    textarea.val('');
+                    toggleClearButton();
+                });
+
+                $('#customFile').change(function() {
+                    if ($(this).val() != '') {
+                        $('#upload-button').prop('disabled', false);
+                    } else {
+                        $('#upload-button').prop('disabled', true);
+                    }
+                });
+            });
+        </script>
+        <script type="application/javascript">
+            document.getElementById('year').innerText = new Date().getFullYear();
         </script>
     {% endblock %}
 {% endblock %}

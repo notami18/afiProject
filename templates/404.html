@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+
+{% block title %}
+    {{ super() }}
+    404
+{% endblock %}
+
+{% block content %}
+    <h1>Lo sentimos no se encontro lo que buscabas!</h1>
+    <p>{{ error }}</p>
+{% endblock %}

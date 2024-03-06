@@ -12,7 +12,7 @@ bootstrap = Bootstrap(app)
 
 @app.route ( '/' )
 def index():
-    return render_template ('index.html')
+    return render_template ('index.html', dictionary=dictionary)
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -30,7 +30,7 @@ def upload():
         for row in sheet.iter_rows(min_row=2):
             palabra = row[1].value.strip().lower() if row[2].value else ''
             pronunciation = row[2].value.strip().lower() if row[2].value else ''
-            dictionary[palabra ] = pronunciation
+            dictionary[palabra] = pronunciation
 
         # Redirigir a la página principal
         return redirect(url_for('index'))
@@ -43,11 +43,14 @@ def upload():
         flash(f'Ocurrió un error inesperado: {str(e)}', 'error')
         return redirect(url_for('upload'))
 
-@app.route('/traducer', methods=['POST'])
+@app.route('/traducer', methods=['GET', 'POST'])
 def traducer():
     texto = request.form['texto'].lower()
-    traduccion = ''
+    transduction = ''
     color = ''
+
+    if request.method == 'POST':
+        texto
 
     # Separación por palabras y signos de puntuación
     palabras = re.findall(r'\b\w+\b|[.,!?;]', texto)
@@ -64,7 +67,11 @@ def traducer():
                 palabra_color['color'] = 'red'
         palabras_color.append(palabra_color)
 
-    return render_template('index.html', traduccion=traduccion, color=color, palabras_color=palabras_color)
+    return render_template('index.html', traduccion=transduction, color=color, palabras_color=palabras_color, texto=texto, dictionary=dictionary)
+
+@app.errorhandler(404)
+def page_not_found(error: Exception):
+    return render_template('404.html', error=error)
 
 @app.errorhandler(500)
 def internal_server_error():
