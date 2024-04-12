@@ -53,19 +53,29 @@ def traducer():
         texto
 
     # Separación por palabras y signos de puntuación
-    palabras = re.findall(r'\b\w+\b|[.,!?;]', texto)
+    palabras = re.findall(r'\b\w+,\b|\b\w+\b|[.,!?;]', texto)
 
     # Traducción y concatenación
     palabras_color = []
+    palabra_anterior = None
     for palabra in palabras:
         palabra_color = {'palabra': '', 'color': 'black'}
         if palabra in dictionary:
-            palabra_color['palabra'] = dictionary[palabra ]
+            if dictionary[palabra].startswith('*') and dictionary[palabra].endswith('*'):
+                palabra_color['color'] = 'blue'
+                palabra_color['palabra'] = dictionary[palabra]
+            else:
+                palabra_color['palabra'] = dictionary[palabra]
         else:
             palabra_color['palabra'] = palabra
             if re.match(r'\b\w+\b', palabra):
                 palabra_color['color'] = 'red'
-        palabras_color.append(palabra_color)
+        # Si la palabra anterior existe y la palabra actual es un carácter de puntuación, concaténalos
+        if palabra_anterior and re.match ( r'[.,!?;]' , palabra ):
+            palabra_anterior [ 'palabra' ] += palabra_color [ 'palabra' ]
+        else:
+            palabras_color.append ( palabra_color )
+            palabra_anterior = palabra_color
 
     return render_template('index.html', traduccion=transduction, color=color, palabras_color=palabras_color, texto=texto, dictionary=dictionary)
 
